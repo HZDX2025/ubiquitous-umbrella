@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>汉责督学 · Study Supervisor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+SC:wght@200;300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #161616;
+            --text-primary: #f5f5f5;
+            --text-secondary: #888888;
+            --accent: #c9a86c;
+            --accent-light: #e8d4b0;
+            --border: #2a2a2a;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            line-height: 1.8;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-text-size-adjust: 100%;
+            overscroll-behavior: none;
+        }
+
+        /* 花体字装饰线条 */
+        .flourish {
+            display: inline-block;
+            position: relative;
+        }
+
+        .flourish::before,
+        .flourish::after {
+            content: '';
+            position: absolute;
+            height: 1px;
+            width: 60px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            top: 50%;
+        }
+
+        .flourish::before {
+            right: 100%;
+            margin-right: 20px;
+        }
+
+        .flourish::after {
+            left: 100%;
+            margin-left: 20px;
+        }
+
+        /* 导航 */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(180deg, var(--bg-primary), transparent);
+            padding: 20px 40px;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .logo span {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.2em;
+            margin-left: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            transition: all 0.4s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent);
+            transition: width 0.4s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-light);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+        }
+
+        /* 页面容器 */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding-top: 100px;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 首页 */
+        .hero {
+            min-height: calc(100vh - 100px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(201, 168, 108, 0.05) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 200;
+            letter-spacing: 0.4em;
+            margin-bottom: 20px;
+            font-style: italic;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.3em;
+            font-style: italic;
+            margin-bottom: 60px;
+        }
+
+        .decorative-line {
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(180deg, var(--accent), transparent);
+            margin: 40px auto;
+        }
+
+        /* 人员简介 */
+        .section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            margin-bottom: 60px;
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .staff-grid {
+            display: grid;
+            gap: 40px;
+        }
+
+        .staff-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .staff-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .staff-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .staff-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .staff-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            flex-shrink: 0;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .staff-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .staff-avatar-placeholder {
+            color: var(--text-secondary);
+            font-size: 2rem;
+            font-style: italic;
+        }
+
+        .staff-info {
+            flex: 1;
+        }
+
+        .staff-name {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .staff-title {
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            margin-bottom: 20px;
+        }
+
+        .staff-bio {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 2;
+        }
+
+        /* 价格列表 */
+        .price-grid {
+            display: grid;
+            gap: 30px;
+        }
+
+        .price-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.4s ease;
+        }
+
+        .price-card:hover {
+            border-color: var(--accent);
+            background: var(--bg-card);
+        }
+
+        .price-info h3 {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .price-info p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .price-amount {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .price-amount span {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* 支付页面 */
+        .payment-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .payment-tab {
+            padding: 15px 40px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            transition: all 0.4s ease;
+        }
+
+        .payment-tab.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--bg-card);
+        }
+
+        .payment-content {
+            display: none;
+            text-align: center;
+        }
+
+        .payment-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .qr-container {
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 30px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .qr-placeholder {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+        }
+
+        .payment-note {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        /* 后台管理 */
+        .admin-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .admin-section-title {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            margin-bottom: 30px;
+            color: var(--accent);
+            font-style: italic;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-family: inherit;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .btn-danger {
+            border-color: #c94c4c;
+            color: #c94c4c;
+        }
+
+        .btn-danger:hover {
+            background: #c94c4c;
+            color: var(--text-primary);
+        }
+
+        .item-list {
+            margin-top: 30px;
+        }
+
+        .item-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .item-content h4 {
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 5px;
+        }
+
+        .item-content p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 20px;
+            font-size: 0.75rem;
+        }
+
+        .file-upload {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            padding: 15px 30px;
+            border: 1px dashed var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .file-label:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .file-preview {
+            width: 100px;
+            height: 100px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .file-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* 装饰元素 */
+        .corner-decor {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .corner-decor.top-left {
+            top: 20px;
+            left: 20px;
+            border-top: 1px solid var(--accent);
+            border-left: 1px solid var(--accent);
+        }
+
+        .corner-decor.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-bottom: 1px solid var(--accent);
+            border-right: 1px solid var(--accent);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 70px;
+            }
+
+            .nav {
+                padding: 15px 20px;
+                background: var(--bg-primary);
+            }
+
+            .nav-inner {
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+                letter-spacing: 0.2em;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            /* 隐藏顶部导航链接，使用底部导航 */
+            .nav-links {
+                display: none !important;
+            }
+
+            /* 移动端底部导航栏 - 确保显示 */
+            .mobile-nav {
+                display: flex !important;
+            }
+
+            .hero {
+                min-height: calc(100vh - 140px);
+                padding: 20px;
+            }
+
+            .hero-title {
+                font-size: 2.2rem;
+                letter-spacing: 0.15em;
+            }
+
+            .hero-subtitle {
+                font-size: 0.9rem;
+                letter-spacing: 0.15em;
+            }
+
+            .decorative-line {
+                height: 60px;
+                margin: 25px auto;
+            }
+
+            .section {
+                padding: 30px 16px;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+                letter-spacing: 0.15em;
+                margin-bottom: 30px;
+            }
+
+            .flourish::before,
+            .flourish::after {
+                width: 30px;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+
+            /* 监督员卡片 */
+            .staff-card {
+                flex-direction: column;
+                padding: 25px 20px;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .staff-avatar {
+                width: 90px;
+                height: 90px;
+                margin: 0 auto;
+            }
+
+            .staff-name {
+                font-size: 1.2rem;
+            }
+
+            .staff-title {
+                font-size: 0.8rem;
+            }
+
+            .staff-bio {
+                font-size: 0.85rem;
+                line-height: 1.8;
+            }
+
+            /* 价格卡片 */
+            .price-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+                padding: 25px 20px;
+            }
+
+            .price-info h3 {
+                font-size: 1.1rem;
+            }
+
+            .price-amount {
+                font-size: 2rem;
+            }
+
+            /* 支付页面 */
+            .payment-tabs {
+                flex-direction: row;
+                gap: 15px;
+            }
+
+            .payment-tab {
+                padding: 12px 25px;
+                font-size: 0.8rem;
+            }
+
+            .qr-container {
+                width: 220px;
+                height: 220px;
+            }
+
+            /* 后台管理 */
+            .admin-section {
+                padding: 25px 20px;
+                margin-bottom: 25px;
+            }
+
+            .admin-section-title {
+                font-size: 1rem;
+                letter-spacing: 0.15em;
+            }
+
+            .form-input,
+            .form-textarea {
+                padding: 12px;
+                font-size: 16px; /* 防止iOS缩放 */
+            }
+
+            .form-label {
+                font-size: 0.8rem;
+            }
+
+            .btn {
+                padding: 14px 30px;
+                font-size: 0.85rem;
+                width: 100%;
+            }
+
+            .file-upload {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .file-label {
+                width: 100%;
+                text-align: center;
+                padding: 12px 20px;
+            }
+
+            .file-preview {
+                width: 80px;
+                height: 80px;
+            }
+
+            .item-card {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .item-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .btn-small {
+                padding: 10px 20px;
+                flex: 1;
+            }
+
+            .corner-decor {
+                display: none;
+            }
+
+            .page {
+                padding-top: 70px;
+            }
+
+            /* Toast */
+            .toast {
+                bottom: 90px;
+                padding: 12px 25px;
+                font-size: 0.8rem;
+                max-width: 90%;
+            }
+
+            /* 登录弹窗 */
+            .login-modal {
+                padding: 35px 25px;
+                margin: 20px;
+            }
+
+            .login-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* 桌面端隐藏移动导航 */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+        }
+
+        .mobile-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 4px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .mobile-nav-item.active {
+            color: var(--accent);
+        }
+
+        .mobile-nav-item svg {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 4px;
+            stroke-width: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-nav {
+                display: flex !important;
+            }
+            
+            .nav-links {
+                display: none !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-nav {
+                display: none !important;
+            }
+            
+            .nav-links {
+                display: flex !important;
+            }
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            padding: 15px 40px;
+            color: var(--accent);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* 登录弹窗 */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .login-modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 50px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+
+        .login-modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 200;
+            letter-spacing: 0.2em;
+            margin-bottom: 10px;
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .login-subtitle {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.1em;
+            margin-bottom: 40px;
+        }
+
+        .login-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .login-close:hover {
+            color: var(--accent);
+        }
+
+        .login-error {
+            color: #c94c4c;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .login-error.show {
+            display: block;
+        }
+
+        /* 加载动画 */
+        #globalLoader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+
+        /* 设置指南 */
+        .setup-guide {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .setup-modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .setup-modal h3 {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .setup-modal p, .setup-modal li {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .setup-modal ol {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .setup-modal pre {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            padding: 20px;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .setup-modal .btn {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="corner-decor top-left"></div>
+    <div class="corner-decor bottom-right"></div>
+
+    <!-- 移动端底部导航 -->
+    <div class="mobile-nav">
+        <a class="mobile-nav-item active" data-page="home">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+            </svg>
+            首页
+        </a>
+        <a class="mobile-nav-item" data-page="staff">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
+            监督员
+        </a>
+        <a class="mobile-nav-item" data-page="price">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            价格
+        </a>
+        <a class="mobile-nav-item" data-page="payment">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
+            </svg>
+            支付
+        </a>
+        <a class="mobile-nav-item" data-page="admin">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            管理
+        </a>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="logo">
+                汉责督学
+                <span>Study Supervisor</span>
+            </div>
+            <div class="nav-links">
+                <a class="nav-link active" data-page="home">首页</a>
+                <a class="nav-link" data-page="staff">监督员介绍</a>
+                <a class="nav-link" data-page="price">服务价格</a>
+                <a class="nav-link" data-page="payment">支付方式</a>
+                <a class="nav-link" data-page="admin">后台管理</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首页 -->
+    <div id="home" class="page active">
+        <div class="hero">
+            <h1 class="hero-title">汉责督学</h1>
+            <p class="hero-subtitle">— STUDY SUPERVISOR —</p>
+            <div class="decorative-line"></div>
+            <p style="color: var(--text-secondary); max-width: 500px; text-align: center; font-style: italic;">
+                以匠心之姿，陪伴每一位求学者<br>
+                在知识的长河中，寻找属于自己的光芒
+            </p>
+        </div>
+    </div>
+
+    <!-- 人员简介 -->
+    <div id="staff" class="page">
+        <div class="section">
+            <h2 class="section-title flourish">监督员介绍</h2>
+            <div id="staffList" class="staff-grid">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 价格列表 -->
+    <div id="price" class="page">
+        <div class="section">
+            <h2 class="section-title flourish">服务价格</h2>
+            <div id="priceList" class="price-grid">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 支付页面 -->
+    <div id="payment" class="page">
+        <div class="section">
+            <h2 class="section-title flourish">支付方式</h2>
+            <div class="payment-tabs">
+                <button class="payment-tab active" data-payment="wechat">微信支付</button>
+                <button class="payment-tab" data-payment="alipay">支付宝</button>
+            </div>
+            <div id="wechat-content" class="payment-content active">
+                <div class="qr-container">
+                    <img id="wechat-qr" src="" alt="微信支付" style="display: none;">
+                    <span class="qr-placeholder" id="wechat-placeholder">请在后台上传微信收款码</span>
+                </div>
+                <p class="payment-note">请使用微信扫描上方二维码完成支付</p>
+            </div>
+            <div id="alipay-content" class="payment-content">
+                <div class="qr-container">
+                    <img id="alipay-qr" src="" alt="支付宝" style="display: none;">
+                    <span class="qr-placeholder" id="alipay-placeholder">请在后台上传支付宝收款码</span>
+                </div>
+                <p class="payment-note">请使用支付宝扫描上方二维码完成支付</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 后台管理 -->
+    <div id="admin" class="page">
+        <div class="section">
+            <h2 class="section-title flourish">后台管理</h2>
+            
+            <!-- 人员管理 -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">监督员管理</h3>
+                <div class="form-group">
+                    <label class="form-label">监督员头像</label>
+                    <div class="file-upload">
+                        <input type="file" id="staffAvatar" class="file-input" accept="image/*" onchange="previewStaffAvatar()">
+                        <label for="staffAvatar" class="file-label">点击上传头像</label>
+                        <div class="file-preview" id="staffAvatarPreview" style="border-radius: 50%;">
+                            <span style="color: var(--text-secondary); font-size: 0.75rem;">预览</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">监督员姓名</label>
+                    <input type="text" id="staffName" class="form-input" placeholder="请输入监督员姓名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">监督员职称</label>
+                    <input type="text" id="staffTitle" class="form-input" placeholder="请输入监督员职称">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">监督员简介</label>
+                    <textarea id="staffBio" class="form-textarea" placeholder="请输入监督员简介"></textarea>
+                </div>
+                <button class="btn" onclick="addStaff()">添加监督员</button>
+                
+                <div id="adminStaffList" class="item-list"></div>
+            </div>
+
+            <!-- 价格管理 -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">价格管理</h3>
+                <div class="form-group">
+                    <label class="form-label">服务名称</label>
+                    <input type="text" id="serviceName" class="form-input" placeholder="请输入服务名称">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">服务描述</label>
+                    <input type="text" id="serviceDesc" class="form-input" placeholder="请输入服务描述">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">价格（元）</label>
+                    <input type="number" id="servicePrice" class="form-input" placeholder="请输入价格">
+                </div>
+                <button class="btn" onclick="addPrice()">添加价格</button>
+                
+                <div id="adminPriceList" class="item-list"></div>
+            </div>
+
+            <!-- 支付码管理 -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">支付码管理</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">微信收款码</label>
+                    <div class="file-upload">
+                        <input type="file" id="wechatFile" class="file-input" accept="image/*" onchange="uploadQR('wechat')">
+                        <label for="wechatFile" class="file-label">点击上传图片</label>
+                        <div class="file-preview" id="wechatPreview">
+                            <span style="color: var(--text-secondary); font-size: 0.75rem;">预览</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">支付宝收款码</label>
+                    <div class="file-upload">
+                        <input type="file" id="alipayFile" class="file-input" accept="image/*" onchange="uploadQR('alipay')">
+                        <label for="alipayFile" class="file-label">点击上传图片</label>
+                        <div class="file-preview" id="alipayPreview">
+                            <span style="color: var(--text-secondary); font-size: 0.75rem;">预览</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 密码管理 -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">密码管理</h3>
+                <div class="form-group">
+                    <label class="form-label">当前密码</label>
+                    <input type="password" id="currentPassword" class="form-input" placeholder="请输入当前密码">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">新密码</label>
+                    <input type="password" id="newPassword" class="form-input" placeholder="请输入新密码">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">确认新密码</label>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="请再次输入新密码">
+                </div>
+                <button class="btn" onclick="changePassword()">修改密码</button>
+                <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 15px; font-style: italic;">默认密码：admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- 登录弹窗 -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-modal">
+            <button class="login-close" onclick="closeLoginModal()">&times;</button>
+            <h3 class="login-title">后台登录</h3>
+            <p class="login-subtitle">ADMIN LOGIN</p>
+            <div class="form-group">
+                <label class="form-label">管理密码</label>
+                <input type="password" id="adminPassword" class="form-input" placeholder="请输入管理密码" onkeypress="handlePasswordKeypress(event)">
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="verifyPassword()">确认登录</button>
+            <p id="loginError" class="login-error">密码错误，请重试</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ==================== Supabase 配置 ====================
+        var SUPABASE_URL = 'https://akkmplsevrdbhafvjvfd.supabase.co';
+        var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFra21wbHNldnJkYmhhZnZqdmZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNjk1MjksImV4cCI6MjA4Mjk0NTUyOX0.ff_MKrPT_PyO6V8c28D979nFBNtiZxu0t0eCHhnn7gs';
+        
+        var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ==================== 数据存储 ====================
+        let appData = {
+            staff: [],
+            prices: [],
+            qrCodes: { wechat: '', alipay: '' },
+            adminPassword: 'admin123'
+        };
+
+        // 登录状态
+        let isAdminLoggedIn = false;
+        let isLoading = true;
+
+        // ==================== 数据库初始化 ====================
+        async function initDatabase() {
+            showLoading('正在连接云端...');
+            
+            try {
+                // 检查并创建表（通过upsert实现）
+                const { data, error } = await supabase
+                    .from('app_config')
+                    .select('*')
+                    .eq('id', 1)
+                    .single();
+
+                if (error && error.code === 'PGRST116') {
+                    // 表不存在或没数据，需要初始化
+                    console.log('首次使用，初始化数据...');
+                    await initDefaultData();
+                } else if (error && error.code === '42P01') {
+                    // 表不存在，显示提示
+                    showSetupGuide();
+                    return;
+                } else if (data) {
+                    // 加载云端数据
+                    appData = {
+                        staff: data.staff || [],
+                        prices: data.prices || [],
+                        qrCodes: data.qr_codes || { wechat: '', alipay: '' },
+                        adminPassword: data.admin_password || 'admin123'
+                    };
+                }
+
+                hideLoading();
+                renderAll();
+                
+            } catch (err) {
+                console.error('数据库连接失败:', err);
+                showToast('云端连接失败，使用本地数据');
+                loadFromLocalStorage();
+                hideLoading();
+                renderAll();
+            }
+        }
+
+        // 初始化默认数据
+        async function initDefaultData() {
+            const defaultData = {
+                id: 1,
+                staff: [
+                    { id: 1, name: '林清雅', title: '高级监督员', bio: '十年教育行业深耕，专注于学习方法与时间管理，帮助上千名学员提升学习效率，实现自我突破。', avatar: '' },
+                    { id: 2, name: '陈墨言', title: '资深监督员', bio: '毕业于顶尖学府，精通各类考试技巧与备考策略，善于针对性制定学习计划，因材施教。', avatar: '' }
+                ],
+                prices: [
+                    { id: 1, name: '基础督学服务', desc: '每周三次学习跟进，含作业检查与答疑', price: 299 },
+                    { id: 2, name: '进阶督学服务', desc: '每日学习跟进，含一对一辅导与规划', price: 599 },
+                    { id: 3, name: 'VIP私人定制', desc: '全程一对一专属督导，个性化学习方案', price: 1299 }
+                ],
+                qr_codes: { wechat: '', alipay: '' },
+                admin_password: 'admin123'
+            };
+
+            const { error } = await supabase
+                .from('app_config')
+                .upsert(defaultData);
+
+            if (!error) {
+                appData = {
+                    staff: defaultData.staff,
+                    prices: defaultData.prices,
+                    qrCodes: defaultData.qr_codes,
+                    adminPassword: defaultData.admin_password
+                };
+            }
+        }
+
+        // 显示数据库设置指南
+        function showSetupGuide() {
+            hideLoading();
+            const guide = document.createElement('div');
+            guide.className = 'setup-guide';
+            guide.innerHTML = `
+                <div class="setup-modal">
+                    <h3>⚙️ 首次设置</h3>
+                    <p>请在 Supabase 中创建数据表：</p>
+                    <ol>
+                        <li>进入 Supabase 控制台</li>
+                        <li>点击左侧 <strong>SQL Editor</strong></li>
+                        <li>复制并运行以下 SQL：</li>
+                    </ol>
+                    <pre>
+CREATE TABLE app_config (
+  id INT PRIMARY KEY DEFAULT 1,
+  staff JSONB DEFAULT '[]',
+  prices JSONB DEFAULT '[]',
+  qr_codes JSONB DEFAULT '{}',
+  admin_password TEXT DEFAULT 'admin123',
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE app_config ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow all" ON app_config
+  FOR ALL USING (true) WITH CHECK (true);
+
+INSERT INTO app_config (id) VALUES (1);
+                    </pre>
+                    <button class="btn" onclick="location.reload()">完成后刷新页面</button>
+                </div>
+            `;
+            document.body.appendChild(guide);
+        }
+
+        // ==================== 云端同步 ====================
+        async function saveToCloud() {
+            showToast('正在同步...');
+            
+            try {
+                const { error } = await supabase
+                    .from('app_config')
+                    .update({
+                        staff: appData.staff,
+                        prices: appData.prices,
+                        qr_codes: appData.qrCodes,
+                        admin_password: appData.adminPassword,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', 1);
+
+                if (error) throw error;
+                
+                // 同时保存到本地作为备份
+                saveToLocalStorage();
+                showToast('同步成功 ✓');
+                
+            } catch (err) {
+                console.error('同步失败:', err);
+                showToast('同步失败，已保存到本地');
+                saveToLocalStorage();
+            }
+        }
+
+        // 本地存储备份
+        function saveToLocalStorage() {
+            localStorage.setItem('studySupervisorData', JSON.stringify(appData));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('studySupervisorData');
+            if (saved) {
+                appData = JSON.parse(saved);
+            }
+        }
+
+        // ==================== 加载状态 ====================
+        function showLoading(text = '加载中...') {
+            let loader = document.getElementById('globalLoader');
+            if (!loader) {
+                loader = document.createElement('div');
+                loader.id = 'globalLoader';
+                loader.innerHTML = `
+                    <div class="loader-content">
+                        <div class="loader-spinner"></div>
+                        <p class="loader-text">${text}</p>
+                    </div>
+                `;
+                document.body.appendChild(loader);
+            } else {
+                loader.querySelector('.loader-text').textContent = text;
+                loader.style.display = 'flex';
+            }
+        }
+
+        function hideLoading() {
+            const loader = document.getElementById('globalLoader');
+            if (loader) {
+                loader.style.display = 'none';
+            }
+            isLoading = false;
+        }
+
+        // ==================== 渲染函数 ====================
+        function renderAll() {
+            renderStaffList();
+            renderPriceList();
+            renderAdminLists();
+            loadQRCodes();
+        }
+
+        function renderStaffList() {
+            const container = document.getElementById('staffList');
+            if (!container) return;
+            
+            if (appData.staff.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:40px;">暂无监督员信息</p>';
+                return;
+            }
+            
+            container.innerHTML = appData.staff.map(s => `
+                <div class="staff-card">
+                    <div class="staff-avatar">
+                        ${s.avatar ? `<img src="${s.avatar}" alt="${s.name}">` : `<span class="staff-avatar-placeholder">${s.name.charAt(0)}</span>`}
+                    </div>
+                    <div class="staff-info">
+                        <h3 class="staff-name">${s.name}</h3>
+                        <p class="staff-title">${s.title}</p>
+                        <p class="staff-bio">${s.bio}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPriceList() {
+            const container = document.getElementById('priceList');
+            if (!container) return;
+            
+            if (appData.prices.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:40px;">暂无价格信息</p>';
+                return;
+            }
+            
+            container.innerHTML = appData.prices.map(p => `
+                <div class="price-card">
+                    <div class="price-info">
+                        <h3>${p.name}</h3>
+                        <p>${p.desc}</p>
+                    </div>
+                    <div class="price-amount">
+                        ¥${p.price}<span>/月</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminLists() {
+            const staffContainer = document.getElementById('adminStaffList');
+            if (staffContainer) {
+                staffContainer.innerHTML = appData.staff.map(s => `
+                    <div class="item-card">
+                        <div class="item-content">
+                            <h4>${s.name} - ${s.title}</h4>
+                            <p>${s.bio}</p>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-small" onclick="editStaff(${s.id})">编辑</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteStaff(${s.id})">删除</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const priceContainer = document.getElementById('adminPriceList');
+            if (priceContainer) {
+                priceContainer.innerHTML = appData.prices.map(p => `
+                    <div class="item-card">
+                        <div class="item-content">
+                            <h4>${p.name} - ¥${p.price}</h4>
+                            <p>${p.desc}</p>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-small" onclick="editPrice(${p.id})">编辑</button>
+                            <button class="btn btn-small btn-danger" onclick="deletePrice(${p.id})">删除</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function loadQRCodes() {
+            ['wechat', 'alipay'].forEach(type => {
+                const preview = document.getElementById(type + 'Preview');
+                const qrImg = document.getElementById(type + '-qr');
+                const placeholder = document.getElementById(type + '-placeholder');
+                
+                if (appData.qrCodes[type]) {
+                    if (preview) preview.innerHTML = `<img src="${appData.qrCodes[type]}" alt="${type}">`;
+                    if (qrImg) {
+                        qrImg.src = appData.qrCodes[type];
+                        qrImg.style.display = 'block';
+                    }
+                    if (placeholder) placeholder.style.display = 'none';
+                }
+            });
+        }
+
+        // ==================== 登录相关 ====================
+        function checkAdminLogin(event) {
+            if (!isAdminLoggedIn) {
+                event.preventDefault();
+                event.stopPropagation();
+                showLoginModal();
+                return false;
+            }
+        }
+
+        function showLoginModal() {
+            document.getElementById('loginOverlay').classList.add('show');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').classList.remove('show');
+            setTimeout(() => document.getElementById('adminPassword').focus(), 100);
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginOverlay').classList.remove('show');
+        }
+
+        function handlePasswordKeypress(event) {
+            if (event.key === 'Enter') {
+                verifyPassword();
+            }
+        }
+
+        function verifyPassword() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === appData.adminPassword) {
+                isAdminLoggedIn = true;
+                closeLoginModal();
+                
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.mobile-nav-item').forEach(l => l.classList.remove('active'));
+                document.querySelector('[data-page="admin"].nav-link')?.classList.add('active');
+                document.querySelector('[data-page="admin"].mobile-nav-item')?.classList.add('active');
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('admin').classList.add('active');
+                
+                showToast('登录成功');
+            } else {
+                document.getElementById('loginError').classList.add('show');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
+            }
+        }
+
+        // ==================== 监督员管理 ====================
+        let currentStaffAvatar = '';
+        
+        function previewStaffAvatar() {
+            const file = document.getElementById('staffAvatar').files[0];
+            if (!file) return;
+
+            // 压缩图片
+            compressImage(file, 200, 0.8).then(dataUrl => {
+                currentStaffAvatar = dataUrl;
+                const preview = document.getElementById('staffAvatarPreview');
+                preview.innerHTML = `<img src="${currentStaffAvatar}" alt="头像预览" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            });
+        }
+
+        async function addStaff() {
+            const name = document.getElementById('staffName').value.trim();
+            const title = document.getElementById('staffTitle').value.trim();
+            const bio = document.getElementById('staffBio').value.trim();
+
+            if (!name || !title || !bio) {
+                showToast('请填写完整信息');
+                return;
+            }
+
+            const newId = appData.staff.length > 0 ? Math.max(...appData.staff.map(s => s.id)) + 1 : 1;
+            appData.staff.push({ id: newId, name, title, bio, avatar: currentStaffAvatar });
+            
+            await saveToCloud();
+            renderStaffList();
+            renderAdminLists();
+            
+            document.getElementById('staffName').value = '';
+            document.getElementById('staffTitle').value = '';
+            document.getElementById('staffBio').value = '';
+            document.getElementById('staffAvatar').value = '';
+            document.getElementById('staffAvatarPreview').innerHTML = '<span style="color: var(--text-secondary); font-size: 0.75rem;">预览</span>';
+            currentStaffAvatar = '';
+        }
+
+        function editStaff(id) {
+            const staff = appData.staff.find(s => s.id === id);
+            if (staff) {
+                document.getElementById('staffName').value = staff.name;
+                document.getElementById('staffTitle').value = staff.title;
+                document.getElementById('staffBio').value = staff.bio;
+                if (staff.avatar) {
+                    currentStaffAvatar = staff.avatar;
+                    document.getElementById('staffAvatarPreview').innerHTML = `<img src="${staff.avatar}" alt="头像预览" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                }
+                deleteStaff(id, true);
+                showToast('请修改后重新添加');
+            }
+        }
+
+        async function deleteStaff(id, silent = false) {
+            appData.staff = appData.staff.filter(s => s.id !== id);
+            await saveToCloud();
+            renderStaffList();
+            renderAdminLists();
+            if (!silent) showToast('删除成功');
+        }
+
+        // ==================== 价格管理 ====================
+        async function addPrice() {
+            const name = document.getElementById('serviceName').value.trim();
+            const desc = document.getElementById('serviceDesc').value.trim();
+            const price = parseInt(document.getElementById('servicePrice').value);
+
+            if (!name || !desc || !price) {
+                showToast('请填写完整信息');
+                return;
+            }
+
+            const newId = appData.prices.length > 0 ? Math.max(...appData.prices.map(p => p.id)) + 1 : 1;
+            appData.prices.push({ id: newId, name, desc, price });
+            
+            await saveToCloud();
+            renderPriceList();
+            renderAdminLists();
+            
+            document.getElementById('serviceName').value = '';
+            document.getElementById('serviceDesc').value = '';
+            document.getElementById('servicePrice').value = '';
+        }
+
+        function editPrice(id) {
+            const price = appData.prices.find(p => p.id === id);
+            if (price) {
+                document.getElementById('serviceName').value = price.name;
+                document.getElementById('serviceDesc').value = price.desc;
+                document.getElementById('servicePrice').value = price.price;
+                deletePrice(id, true);
+                showToast('请修改后重新添加');
+            }
+        }
+
+        async function deletePrice(id, silent = false) {
+            appData.prices = appData.prices.filter(p => p.id !== id);
+            await saveToCloud();
+            renderPriceList();
+            renderAdminLists();
+            if (!silent) showToast('删除成功');
+        }
+
+        // ==================== 二维码管理 ====================
+        async function uploadQR(type) {
+            const file = document.getElementById(type + 'File').files[0];
+            if (!file) return;
+
+            showToast('正在上传...');
+            
+            // 压缩图片
+            const dataUrl = await compressImage(file, 400, 0.8);
+            appData.qrCodes[type] = dataUrl;
+            
+            await saveToCloud();
+            
+            const preview = document.getElementById(type + 'Preview');
+            preview.innerHTML = `<img src="${dataUrl}" alt="${type}">`;
+            
+            const qrImg = document.getElementById(type + '-qr');
+            const placeholder = document.getElementById(type + '-placeholder');
+            qrImg.src = dataUrl;
+            qrImg.style.display = 'block';
+            placeholder.style.display = 'none';
+        }
+
+        // ==================== 密码管理 ====================
+        async function changePassword() {
+            const currentPwd = document.getElementById('currentPassword').value;
+            const newPwd = document.getElementById('newPassword').value;
+            const confirmPwd = document.getElementById('confirmPassword').value;
+
+            if (!currentPwd || !newPwd || !confirmPwd) {
+                showToast('请填写完整信息');
+                return;
+            }
+
+            if (currentPwd !== appData.adminPassword) {
+                showToast('当前密码错误');
+                return;
+            }
+
+            if (newPwd !== confirmPwd) {
+                showToast('两次输入的新密码不一致');
+                return;
+            }
+
+            if (newPwd.length < 6) {
+                showToast('新密码至少6位');
+                return;
+            }
+
+            appData.adminPassword = newPwd;
+            await saveToCloud();
+
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+
+            showToast('密码修改成功');
+        }
+
+        // ==================== 工具函数 ====================
+        function compressImage(file, maxSize, quality) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > maxSize || height > maxSize) {
+                            if (width > height) {
+                                height = (height / width) * maxSize;
+                                width = maxSize;
+                            } else {
+                                width = (width / height) * maxSize;
+                                height = maxSize;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }
+        }
+
+        // ==================== 页面导航 ====================
+        function navigateTo(page) {
+            console.log('导航到:', page);
+            
+            // 后台管理需要登录验证
+            if (page === 'admin' && !isAdminLoggedIn) {
+                showLoginModal();
+                return;
+            }
+            
+            // 移除所有active状态
+            var navLinks = document.querySelectorAll('.nav-link');
+            var mobileItems = document.querySelectorAll('.mobile-nav-item');
+            var pages = document.querySelectorAll('.page');
+            
+            for (var i = 0; i < navLinks.length; i++) {
+                navLinks[i].classList.remove('active');
+            }
+            for (var i = 0; i < mobileItems.length; i++) {
+                mobileItems[i].classList.remove('active');
+            }
+            for (var i = 0; i < pages.length; i++) {
+                pages[i].classList.remove('active');
+            }
+            
+            // 添加active状态
+            var targetNavLink = document.querySelector('.nav-link[data-page="' + page + '"]');
+            var targetMobileItem = document.querySelector('.mobile-nav-item[data-page="' + page + '"]');
+            var targetPage = document.getElementById(page);
+            
+            if (targetNavLink) targetNavLink.classList.add('active');
+            if (targetMobileItem) targetMobileItem.classList.add('active');
+            if (targetPage) targetPage.classList.add('active');
+        }
+
+        // 绑定导航事件 - 页面加载完成后执行
+        function bindNavigationEvents() {
+            // 桌面端导航
+            var navLinks = document.querySelectorAll('.nav-link');
+            for (var i = 0; i < navLinks.length; i++) {
+                navLinks[i].onclick = function(e) {
+                    e.preventDefault();
+                    var page = this.getAttribute('data-page');
+                    navigateTo(page);
+                };
+            }
+            
+            // 移动端导航
+            var mobileItems = document.querySelectorAll('.mobile-nav-item');
+            for (var i = 0; i < mobileItems.length; i++) {
+                mobileItems[i].onclick = function(e) {
+                    e.preventDefault();
+                    var page = this.getAttribute('data-page');
+                    navigateTo(page);
+                };
+            }
+            
+            // 支付标签
+            var paymentTabs = document.querySelectorAll('.payment-tab');
+            for (var i = 0; i < paymentTabs.length; i++) {
+                paymentTabs[i].onclick = function() {
+                    var payment = this.getAttribute('data-payment');
+                    
+                    var allTabs = document.querySelectorAll('.payment-tab');
+                    var allContents = document.querySelectorAll('.payment-content');
+                    
+                    for (var j = 0; j < allTabs.length; j++) {
+                        allTabs[j].classList.remove('active');
+                    }
+                    for (var j = 0; j < allContents.length; j++) {
+                        allContents[j].classList.remove('active');
+                    }
+                    
+                    this.classList.add('active');
+                    document.getElementById(payment + '-content').classList.add('active');
+                };
+            }
+            
+            console.log('导航事件绑定完成');
+        }
+
+        // ==================== 启动应用 ====================
+        // 确保DOM加载完成后绑定事件
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                bindNavigationEvents();
+                initDatabase();
+            });
+        } else {
+            bindNavigationEvents();
+            initDatabase();
+        }
+    </script>
+</body>
+</html>
