@@ -1368,7 +1368,7 @@
             
             try {
                 // 检查并创建表（通过upsert实现）
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClientClient
                     .from('app_config')
                     .select('*')
                     .eq('id', 1)
@@ -1421,7 +1421,7 @@
                 admin_password: 'admin123'
             };
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('app_config')
                 .upsert(defaultData);
 
@@ -1477,7 +1477,7 @@ INSERT INTO app_config (id) VALUES (1);
             showToast('正在同步...');
             
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('app_config')
                     .update({
                         staff: appData.staff,
